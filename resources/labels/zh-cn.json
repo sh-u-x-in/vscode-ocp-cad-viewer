@@ -285,5 +285,15 @@
   "cylinder": "圆柱面",
   "cone": "圆锥面",
   "sphere": "球面",
-  "torus": "圆环面"
+  "torus": "圆环面",
+  "hyperbola": "双曲线",
+  "parabola": "抛物线",
+  "bezier": "贝塞尔",
+  "offset curve": "偏移曲线",
+  "other curve": "其他曲线",
+  "surface of revolution": "回转面",
+  "surface of extrusion": "拉伸面",
+  "offset surface": "偏移曲面",
+  "other surface": "其他曲面",
+  "other": "其他"
 }
