@@ -367,6 +367,17 @@ export async function activate(context: vscode.ExtensionContext) {
                 OCPCADViewer.currentPanel?.dispose();
             }
         }
+        // The viewer language rides the init handshake, which a running page
+        // only replays when its webview is reloaded - so reload it here and
+        // the change applies without closing the viewer.
+        if (event.affectsConfiguration("OcpCadViewer.view.language")) {
+            const htmlPath = vscode.Uri.joinPath(
+                context.extensionUri,
+                "resources",
+                "viewer.html"
+            );
+            OCPCADViewer.currentPanel?.update(fs.readFileSync(htmlPath.fsPath, "utf8"));
+        }
     });
 
     vscode.window.onDidChangeActiveTextEditor(async (editor) => {
