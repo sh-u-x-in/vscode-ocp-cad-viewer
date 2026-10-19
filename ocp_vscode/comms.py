@@ -71,7 +71,7 @@ class VSCodeComms(WebSocketComms):
 
     def choose_port(self, ports):
         if self._in_kernel():
-            print("\n=> Select port in VS Code input box above\n")
+            print("\n=> 请在上方 VS Code 输入框中选择端口\n")
         return super().choose_port(ports)
 
     @staticmethod

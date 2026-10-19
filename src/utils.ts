@@ -114,7 +114,9 @@ class PythonPath {
         } else {
             output.debug(`utils.PythonPath: 'python', environment: DEFAULT`);
             vscode.window.showErrorMessage(
-                "No Python environment seems to be selected, falling back to default - might not work!"
+                vscode.l10n.t(
+                    "No Python environment seems to be selected, falling back to default - might not work!"
+                )
             );
             return "python";
         }

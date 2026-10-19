@@ -41,7 +41,9 @@ export async function download(library: string, destination: string) {
             const tempFolder = path.join(os.tmpdir(), "cadquery-viewer");
             fs.mkdtemp(tempFolder, (err, folder) => {
                 if (err) {
-                    vscode.window.showErrorMessage(`Cannot create temp folder ${folder}`);
+                    vscode.window.showErrorMessage(
+                        vscode.l10n.t("Cannot create temp folder {0}", folder)
+                    );
                     return;
                 }
                 const downloadPath = path.join(folder, filename);
@@ -51,7 +53,7 @@ export async function download(library: string, destination: string) {
                 stream.on("finish", () => {
                     stream.close();
                     vscode.window.showInformationMessage(
-                        `File "${archiveUrl}" downloaded successfully.`
+                        vscode.l10n.t('File "{0}" downloaded successfully.', archiveUrl)
                     );
                     output.info(`extension.downloadExample: Archive URL ${archiveUrl} downloaded`);
                     try {
@@ -59,7 +61,9 @@ export async function download(library: string, destination: string) {
                         zip.extractAllTo(folder, true);
                         output.info(`extension.downloadExample: Archive unzipped to ${folder}`);
                     } catch (error) {
-                        vscode.window.showErrorMessage(`Unzipping "${downloadPath}" failed.`);
+                        vscode.window.showErrorMessage(
+                            vscode.l10n.t('Unzipping "{0}" failed.', downloadPath)
+                        );
                         output.error(
                             `extension.downloadExample: Unzipping "${downloadPath}" failed: ${error}`
                         );
@@ -68,14 +72,17 @@ export async function download(library: string, destination: string) {
                     fs.rename(path.join(folder, examplePath), targetPath, (err) => {
                         if (err) {
                             vscode.window.showErrorMessage(
-                                `Moving examples to "${targetPath}" failed.`
+                                vscode.l10n.t('Moving examples to "{0}" failed.', targetPath)
                             );
                             output.error(
                                 `extension.downloadExample: Moving examples to "${targetPath}" failed: ${err}`
                             );
                         } else {
                             vscode.window.showInformationMessage(
-                                `Examples successfully downloaded to "${targetPath}".`
+                                vscode.l10n.t(
+                                    'Examples successfully downloaded to "{0}".',
+                                    targetPath
+                                )
                             );
                             output.info(
                                 `extension.downloadExample: Examples successfully downloaded to "${targetPath}".`
@@ -85,7 +92,9 @@ export async function download(library: string, destination: string) {
                 });
             });
         } else {
-            vscode.window.showErrorMessage(`Cannot download ${archiveUrl}`);
+            vscode.window.showErrorMessage(
+                vscode.l10n.t("Cannot download {0}", archiveUrl)
+            );
             output.error(
                 `extension.downloadExample: ${archiveUrl} ${response.statusMessage} (${response.statusCode})`
             );
@@ -97,7 +106,7 @@ export async function download(library: string, destination: string) {
     });
 
     request.on("error", function (e: any) {
-        vscode.window.showErrorMessage(`Cannot download ${archiveUrl}`);
+        vscode.window.showErrorMessage(vscode.l10n.t("Cannot download {0}", archiveUrl));
         output.error(`extension.downloadExample: Cannot download ${archiveUrl} ${e}`);
     });
 }

@@ -133,11 +133,11 @@ export class OCPCADViewer {
                             // ... and then rename to the actual filename
                             fs.renameSync(filename + suffix, filename);
                             vscode.window.showInformationMessage(
-                                `Screenshot saved as\n${filename}`
+                                vscode.l10n.t("Screenshot saved as\n{0}", filename)
                             );
                         } catch (error) {
                             vscode.window.showErrorMessage(
-                                `Error saving screenshot as\n${filename}`
+                                vscode.l10n.t("Error saving screenshot as\n{0}", filename)
                             );
                         }
                         return;

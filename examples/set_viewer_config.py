@@ -37,7 +37,7 @@ def check(conf):
     error = False
     for k, v in conf.items():
         if not equal(s[k], v):
-            print(f"ERROR: {k} is not {v}, but {s[k]}")
+            print(f"错误: {k} 不是 {v},而是 {s[k]}")
             error = True
     if not error:
         print("OK")

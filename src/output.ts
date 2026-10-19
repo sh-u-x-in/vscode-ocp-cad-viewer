@@ -45,8 +45,17 @@ function getPrefix(logLevel?: string) {
     return `${timestamp} [${level}] `;
 }
 
+let logName: string | undefined;
+
+export function getLogName(): string {
+    if (logName === undefined) {
+        logName = vscode.l10n.t("OCP CAD Viewer Log");
+    }
+    return logName;
+}
+
 export function open() {
-    log = vscode.window.createOutputChannel("OCP CAD Viewer Log", "log");
+    log = vscode.window.createOutputChannel(getLogName(), "log");
 }
 
 export function hide() {

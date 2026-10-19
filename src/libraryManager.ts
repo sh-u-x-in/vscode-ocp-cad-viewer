@@ -97,18 +97,23 @@ export async function installLib(
         return;
     }
     let python = await getPythonPath();
+    const yes = vscode.l10n.t("yes");
+    const no = vscode.l10n.t("no");
     let reply =
-        (await vscode.window.showQuickPick(["yes", "no"], {
-            placeHolder: `Is "${python}" the right interpreter for the installation?`
+        (await vscode.window.showQuickPick([yes, no], {
+            placeHolder: vscode.l10n.t(
+                'Is "{0}" the right interpreter for the installation?',
+                python
+            )
         })) || "";
-    if (reply === "" || reply === "no") {
+    if (reply === "" || reply === no) {
         return;
     }
 
     python = await getPythonPath();
 
     if (python === "python") {
-        vscode.window.showErrorMessage("Select Python Interpreter first!");
+        vscode.window.showErrorMessage(vscode.l10n.t("Select Python Interpreter first!"));
         return;
     }
 
@@ -120,14 +125,16 @@ export async function installLib(
             }
         });
         if (!valid) {
-            vscode.window.showErrorMessage(`Python version(s) ${requiredPythonVersion} required!`);
+            vscode.window.showErrorMessage(
+                vscode.l10n.t("Python version(s) {0} required!", requiredPythonVersion)
+            );
             return;
         }
     }
 
     const shellConfig = getAutomationShellConfig();
     let term = vscode.window.createTerminal({
-        name: "Library Installations",
+        name: vscode.l10n.t("Library Installations"),
         ...shellConfig
     });
     term.show();
@@ -137,7 +144,10 @@ export async function installLib(
 
         if (["cadquery", "build123d"].includes(library)) {
             vscode.window.showInformationMessage(
-                `Depending on your os, the first import of ${library} can take several seconds`
+                vscode.l10n.t(
+                    "Depending on your os, the first import of {0} can take several seconds",
+                    library
+                )
             );
         }
 
@@ -177,7 +187,9 @@ export class LibraryManagerProvider implements vscode.TreeDataProvider<Library> 
         }
         if (outdated) {
             vscode.window.showErrorMessage(
-                "Your installCommands are outdated.\nPlease update them in your settings.json ('OcpCadViewer.advanced.installCommands')"
+                vscode.l10n.t(
+                    "Your installCommands are outdated.\nPlease update them in your settings.json ('OcpCadViewer.advanced.installCommands')"
+                )
             );
         }
         this.codeSnippets =
@@ -214,7 +226,9 @@ export class LibraryManagerProvider implements vscode.TreeDataProvider<Library> 
         }
         if (!Array.isArray(commands)) {
             vscode.window.showErrorMessage(
-                "Your installCommands are outdated.\nPlease update them in your settings.json ('OcpCadViewer.advanced.installCommands')"
+                vscode.l10n.t(
+                    "Your installCommands are outdated.\nPlease update them in your settings.json ('OcpCadViewer.advanced.installCommands')"
+                )
             );
             return [];
         }
@@ -295,7 +309,7 @@ export class LibraryManagerProvider implements vscode.TreeDataProvider<Library> 
             let snippet = new vscode.SnippetString(importCmd.join("\n") + "\n");
             editor?.insertSnippet(snippet);
         } else {
-            vscode.window.showErrorMessage("No editor open");
+            vscode.window.showErrorMessage(vscode.l10n.t("No editor open"));
         }
     }
 
@@ -307,7 +321,7 @@ export class LibraryManagerProvider implements vscode.TreeDataProvider<Library> 
         if (element) {
             if (Object.keys(this.installed).includes(element.label)) {
                 let editable = this.installed[element.label][3];
-                let manager = this.installed[element.label][1] || "n/a";
+                let manager = this.installed[element.label][1] || vscode.l10n.t("n/a");
                 let location = this.installed[element.label][2];
                 let p = location.split(path.sep);
                 let env = p[p.length - 4];
@@ -315,14 +329,14 @@ export class LibraryManagerProvider implements vscode.TreeDataProvider<Library> 
                 let libs: Library[] = [];
                 libs.push(
                     new Library(
-                        "installer",
+                        vscode.l10n.t("installer"),
                         { installer: manager },
                         vscode.TreeItemCollapsibleState.None
                     )
                 );
                 libs.push(
                     new Library(
-                        "environment",
+                        vscode.l10n.t("environment"),
                         {
                             location: location
                                 .replace(/\/bin\/python.*$/g, "")
@@ -335,7 +349,7 @@ export class LibraryManagerProvider implements vscode.TreeDataProvider<Library> 
                 if (editable !== "") {
                     libs.push(
                         new Library(
-                            "editable",
+                            vscode.l10n.t("editable"),
                             { editable: editable },
                             vscode.TreeItemCollapsibleState.None
                         )
@@ -344,7 +358,7 @@ export class LibraryManagerProvider implements vscode.TreeDataProvider<Library> 
                 if (this.exampleDownloads[element.label]) {
                     libs.push(
                         new Library(
-                            "examples",
+                            vscode.l10n.t("examples"),
                             { examples: "", parent: element.label },
                             vscode.TreeItemCollapsibleState.None
                         )
@@ -359,7 +373,9 @@ export class LibraryManagerProvider implements vscode.TreeDataProvider<Library> 
             this.getInstallLibs().forEach((lib: string) => {
                 let installed = Object.keys(this.installed).includes(lib);
 
-                let version = installed ? this.installed[sanitize(lib)][0] : "n/a";
+                let version = installed
+                    ? this.installed[sanitize(lib)][0]
+                    : vscode.l10n.t("n/a");
 
                 let state = installed
                     ? vscode.TreeItemCollapsibleState.Expanded
@@ -368,7 +384,7 @@ export class LibraryManagerProvider implements vscode.TreeDataProvider<Library> 
                 libs.push(new Library(lib, { version: version }, state));
 
                 if (lib === "ocp_vscode") {
-                    this.statusManager.installed = version !== "n/a";
+                    this.statusManager.installed = version !== vscode.l10n.t("n/a");
                     this.statusManager.setLibraries(Object.keys(this.installed));
                     this.statusManager.refresh(this.statusManager.getPort());
                 }
@@ -401,8 +417,8 @@ export class Library extends vscode.TreeItem {
             this.tooltip = options.editable;
             this.description = options.editable.toString();
         } else if (options.examples !== undefined) {
-            this.tooltip = "Download examples from github";
-            this.description = "(download only)";
+            this.tooltip = vscode.l10n.t("Download examples from github");
+            this.description = vscode.l10n.t("(download only)");
             this.contextValue = "examples";
         }
     }

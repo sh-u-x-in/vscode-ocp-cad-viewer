@@ -50,6 +50,31 @@ function modifierKeys(options: vscode.WorkspaceConfiguration): Record<string, st
     return configured["default"] ?? configured["macOS"];
 }
 
+let backendName: string | undefined;
+
+function backendTerminalName(): string {
+    if (backendName === undefined) {
+        backendName = vscode.l10n.t("OCP backend");
+    }
+    return backendName;
+}
+
+/**
+ * The language of the 3D view's labels. `auto` follows the display language
+ * of VS Code, `en` and `zh-CN` pin it explicitly.
+ */
+function viewerLanguage(): "zh-CN" | "en" {
+    const configured =
+        vscode.workspace.getConfiguration("OcpCadViewer.view").get<string>("language") ?? "auto";
+    if (configured === "zh-CN") {
+        return "zh-CN";
+    }
+    if (configured === "en") {
+        return "en";
+    }
+    return vscode.env.language.toLowerCase().startsWith("zh") ? "zh-CN" : "en";
+}
+
 var serverStarted = false;
 
 interface Message {
@@ -101,27 +126,50 @@ export class OCPCADController {
         // boundary. The splash model itself is ocp-viewer-core's and does not
         // travel: the webview has the core loaded and asks it by name.
         var conf = this.config();
+        const settings: Record<string, any> = {
+            keymap: conf["modifier_keys"],
+            theme: conf["theme"],
+            treeWidth: conf["tree_width"],
+            glass: conf["glass"],
+            tools: conf["tools"],
+            up: conf["up"],
+            control: conf["control"]
+        };
+        if (viewerLanguage() === "zh-CN") {
+            try {
+                const labelsPath = vscode.Uri.joinPath(
+                    this.context.extensionUri,
+                    "resources",
+                    "labels",
+                    "zh-cn.json"
+                ).fsPath;
+                settings.labels = JSON.parse(fs.readFileSync(labelsPath, "utf8"));
+            } catch (error: any) {
+                // No labels: the seam side falls back to English.
+                output.error(
+                    `OCPCADController.logo: Cannot load viewer labels: ${error?.message ?? error}`
+                );
+            }
+        }
         return await this.view?.postMessage({
             type: "init",
             paths: {
-                style: this.resourceUri("three-cad-viewer", "dist", "three-cad-viewer.css"),
-                renderer: this.resourceUri(
-                    "three-cad-viewer",
-                    "dist",
+                style: this.extensionResource("resources", "viewer", "three-cad-viewer.css"),
+                renderer: this.extensionResource(
+                    "resources",
+                    "viewer",
                     "three-cad-viewer.esm.js"
                 ),
                 core: this.resourceUri("ocp-viewer-core", "src", "index.js")
             },
-            settings: {
-                keymap: conf["modifier_keys"],
-                theme: conf["theme"],
-                treeWidth: conf["tree_width"],
-                glass: conf["glass"],
-                tools: conf["tools"],
-                up: conf["up"],
-                control: conf["control"]
-            }
+            settings
         });
+    }
+
+    private extensionResource(...segments: string[]): string {
+        return this.view!.asWebviewUri(
+            vscode.Uri.joinPath(this.context.extensionUri, ...segments)
+        ).toString();
     }
 
     private resourceUri(...segments: string[]): string {
@@ -341,7 +389,7 @@ export class OCPCADController {
 
         const shellConfig = getAutomationShellConfig();
         let pythonBackendTerminal = vscode.window.createTerminal({
-            name: "OCP backend",
+            name: backendTerminalName(),
             cwd: cwd,
             // Prevent VS Code from restoring this terminal across window
             // reloads. Without this, the panel reappears with replayed
@@ -401,8 +449,11 @@ export class OCPCADController {
         }
 
         vscode.window.showErrorMessage(
-            `OCP CAD Viewer: backend on port ${this.port} is not connected. ` +
-                `Restart it in the OCP backend terminal, or reopen the viewer.`
+            vscode.l10n.t(
+                "OCP CAD Viewer: backend on port {0} is not connected. Restart it in the {1} terminal, or reopen the viewer.",
+                this.port,
+                backendTerminalName()
+            )
         );
     }
 

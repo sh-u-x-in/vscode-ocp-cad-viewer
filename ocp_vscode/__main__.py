@@ -32,11 +32,11 @@ from ocp_vscode.comms import comms, set_port
 
 
 MOVED = """
-Standalone OCP viewer is now part of the package ocp_viewer
+独立版 OCP 查看器现已并入 ocp_viewer 包
 
-    Install it via `[uv] pip install ocp_viewer`
-    Run it via     `python -m ocp_viewer`
-    and use        `from ocp_viewer import show, ...`
+    安装:`[uv] pip install ocp_viewer`
+    运行:`python -m ocp_viewer`
+    使用:`from ocp_viewer import show, ...`
 """
 
 
@@ -46,16 +46,16 @@ def main():
     # thing people type when the old command stops starting a viewer.
     parser = argparse.ArgumentParser(
         prog="python -m ocp_vscode",
-        description="OCP CAD Viewer measurement backend",
+        description="OCP CAD Viewer 测量后端",
         epilog=MOVED,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
         "--backend",
         action="store_true",
-        help="Run the measurement backend, which is what this module is for",
+        help="运行测量后端(本模块的用途)",
     )
-    parser.add_argument("--port", type=int, help="Port the viewer listens on")
+    parser.add_argument("--port", type=int, help="查看器监听的端口")
     args = parser.parse_args()
 
     # `python -m ocp_vscode` with no arguments started the standalone viewer for
@@ -66,7 +66,7 @@ def main():
         return
 
     if args.port is None:
-        parser.error("--backend needs --port")
+        parser.error("--backend 需要 --port")
 
     # The backend takes nothing: it computes an answer and returns it. Driving
     # it and delivering that answer are this host's, and both are the listener's
@@ -79,10 +79,9 @@ def main():
         comms.listener(backend.handle_event)()
     except ConnectionRefusedError:
         print(
-            f"Cannot connect to OCP CAD Viewer on port {args.port}.\n"
-            "This is the measurement backend, and it connects to a viewer that "
-            "is already running.\nFor the standalone viewer, use `python -m "
-            "ocp_viewer`."
+            f"无法连接到端口 {args.port} 上的 OCP CAD Viewer。\n"
+            "这是测量后端,它连接的是一个已经在运行的查看器。\n"
+            "如需独立查看器,请使用 `python -m ocp_viewer`。"
         )
     except Exception as ex:  # noqa: BLE001
         print(ex)

@@ -92,7 +92,9 @@ export class StatusManagerProvider implements vscode.TreeDataProvider<Status> {
                     new Status(
                         "extension",
                         {
-                            extension: this.hasJupyterExtension ? "installed" : "not installed",
+                            extension: this.hasJupyterExtension
+                                ? vscode.l10n.t("installed")
+                                : vscode.l10n.t("not installed"),
                             jupyter: this.hasJupyterExtension
                         },
                         vscode.TreeItemCollapsibleState.None
@@ -107,7 +109,11 @@ export class StatusManagerProvider implements vscode.TreeDataProvider<Status> {
                 status.push(
                     new Status(
                         "ocp_vscode",
-                        { running: this.running ? "RUNNING" : "STOPPED" },
+                        {
+                            running: this.running
+                                ? vscode.l10n.t("RUNNING")
+                                : vscode.l10n.t("STOPPED")
+                        },
                         state
                     )
                 );
@@ -152,21 +158,24 @@ export class Status extends vscode.TreeItem {
         if (options.running !== undefined) {
             this.description = options.running;
             this.tooltip =
-                options.running === "RUNNING"
-                    ? "OCP CAD Viewer is running"
-                    : "OCP CAD Viewer is stopped";
+                options.running === vscode.l10n.t("RUNNING")
+                    ? vscode.l10n.t("OCP CAD Viewer is running")
+                    : vscode.l10n.t("OCP CAD Viewer is stopped");
         } else if (options.port !== undefined) {
             this.contextValue = "port";
             this.description = options.port;
-            this.tooltip = `OCP CAD Viewer is listening on port ${options.port}`;
+            this.tooltip = vscode.l10n.t(
+                "OCP CAD Viewer is listening on port {0}",
+                options.port
+            );
         } else if (options.extension !== undefined) {
             this.contextValue = options.jupyter ? "jupyterExtInstalled" : "jupyterExtMissing";
             this.description = options.extension;
-            this.tooltip = `Jupyter extension is ${options.extension}`;
+            this.tooltip = vscode.l10n.t("Jupyter extension is {0}", options.extension);
         } else if (options.version !== undefined) {
             this.contextValue = "version";
             this.description = options.version;
-            this.tooltip = `ocp_vscode extension ${options.version}`;
+            this.tooltip = vscode.l10n.t("ocp_vscode extension {0}", options.version);
         }
     }
 }

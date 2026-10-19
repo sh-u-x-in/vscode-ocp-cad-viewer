@@ -25,7 +25,7 @@ _build123d_ttt_dir = _script_dir / "../../build123d/docs/assets/ttt"
 def run_example(path: Path) -> bool:
     """Run a single example and return True if successful."""
     print(f"\n{'='*60}")
-    print(f"Running: {path.name}")
+    print(f"正在运行: {path.name}")
     print('='*60)
 
     with tempfile.TemporaryDirectory(prefix=f"build123d_example_{path.name}") as tmpdir:
@@ -39,21 +39,21 @@ def run_example(path: Path) -> bool:
         )
 
         if result.returncode != 0:
-            print(f"FAILED: {path.name} (exit code {result.returncode})")
+            print(f"失败: {path.name}(退出码 {result.returncode})")
             return False
 
-        print(f"SUCCESS: {path.name}")
+        print(f"成功: {path.name}")
 
         # Reset camera and wait for key press
         set_viewer_config(reset_camera=Camera.ISO, zoom=1)
-        input("Press Enter to continue...")
+        input("按回车继续...")
 
         return True
 
 
 def main():
     if not _build123d_examples_dir.exists():
-        print(f"Error: build123d examples directory not found at {_build123d_examples_dir}")
+        print(f"错误: 未找到 build123d 示例目录 {_build123d_examples_dir}")
         sys.exit(1)
 
     # Optional filter from command line
@@ -71,10 +71,10 @@ def main():
                 examples.append(example)
 
     if not examples:
-        print("No examples found" + (f" matching '{name_filter}'" if name_filter else ""))
+        print("未找到示例" + (f"(筛选: '{name_filter}')" if name_filter else ""))
         sys.exit(1)
 
-    print(f"Found {len(examples)} example(s)")
+    print(f"共找到 {len(examples)} 个示例")
 
     # Run examples
     passed = 0
@@ -89,18 +89,18 @@ def main():
                 failed += 1
                 failed_names.append(example.name)
         except KeyboardInterrupt:
-            print("\nInterrupted by user")
+            print("\n已被用户中断")
             break
         except Exception as e:
-            print(f"ERROR: {example.name}: {e}")
+            print(f"错误: {example.name}: {e}")
             failed += 1
             failed_names.append(example.name)
 
     # Summary
     print(f"\n{'='*60}")
-    print(f"Summary: {passed} passed, {failed} failed")
+    print(f"汇总: {passed} 个通过,{failed} 个失败")
     if failed_names:
-        print(f"Failed: {', '.join(failed_names)}")
+        print(f"失败列表: {', '.join(failed_names)}")
     print('='*60)
 
 

@@ -9,7 +9,7 @@ export class TerminalExecute {
     workspaceFolder: string | undefined;
     errorMsg: string = "";
     stdout: string = "";
-    terminalName = "OCP CAD Viewer Terminal";
+    terminalName = vscode.l10n.t("OCP CAD Viewer Terminal");
     child: any = undefined;
 
     constructor(msg: string) {
@@ -56,7 +56,7 @@ export class TerminalExecute {
     async killProcess() {
         if (this.child && !this.child.killed) {
             this.child.kill();
-            vscode.window.showInformationMessage("Process killed");
+            vscode.window.showInformationMessage(vscode.l10n.t("Process killed"));
             output.info("Process killed");
             this.child = undefined;
         }
@@ -84,15 +84,15 @@ export class TerminalExecute {
             });
             this.child.on("exit", (code: number, signal: any) => {
                 if (code === 0) {
-                    this.print(`Successfully executed '${command}`);
+                    this.print(vscode.l10n.t("Successfully executed '{0}'", command));
                     vscode.window.showInformationMessage(
-                        `Successfully executed '${command}'`
+                        vscode.l10n.t("Successfully executed '{0}'", command)
                     );
                     output.info(`Successfully executed '${command}'`);
                     resolve(this.stdout);
                 } else {
                     vscode.window.showErrorMessage(
-                        `Failed to execute '${command}(${code})'`
+                        vscode.l10n.t("Failed to execute '{0}' ({1})", command, code)
                     );
                     output.error(`Failed to execute '${command}(${code})'`);
                     output.error(this.errorMsg);
