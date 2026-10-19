@@ -96946,13 +96946,23 @@ class PropertiesPanel extends Panel {
         this.finished = true;
     }
 }
+// The rendered label for each canonical filter entry. The state is derived
+// from the option element that was clicked - never from its rendered text -
+// so these labels are free to be translated.
+const TOPO_LABELS = {
+    none: "All",
+    vertex: "Vertex",
+    edge: "Edge",
+    face: "Face",
+    solid: "Solid",
+};
 class FilterByDropDownMenu {
     /**
      * Initialize a new filter drop down menu.
      */
     constructor(display) {
         this.setValue = (topoType) => {
-            this.elements.value.innerText = topoType;
+            this.elements.value.innerText = this.display.t(topoType);
             const key = topoType.toLowerCase();
             let filter = null;
             if (key === "all" || key === "none") {
@@ -96988,8 +96998,13 @@ class FilterByDropDownMenu {
         this.handleSelection = (ev) => {
             const target = ev.target;
             if (target instanceof HTMLElement) {
-                this.setValue(target.innerText);
-                this.toggleDropdown(ev);
+                // Match the clicked option element by identity rather than reading its
+                // rendered text: the text is translated, the element keys are not.
+                const hit = Object.entries(this.elements.options).find(([, el]) => el === target);
+                if (hit !== undefined) {
+                    this.setValue(TOPO_LABELS[hit[0]]);
+                    this.toggleDropdown(ev);
+                }
             }
         };
         this.reset = () => {
@@ -113877,7 +113892,6 @@ function px(val) {
  * (`input.tcv_tab`'s `value`) are translated — never generic input values.
  */
 function localizeDom(root, t) {
-    const isSkipped = (el) => el != null && el.closest(".tcv_filter_menu") != null;
     // Text nodes
     const walker = root.ownerDocument.createTreeWalker(root, NodeFilter.SHOW_TEXT);
     const textNodes = [];
@@ -113885,7 +113899,6 @@ function localizeDom(root, t) {
     while (node != null) {
         const el = node.parentElement;
         if (el != null &&
-            !isSkipped(el) &&
             el.tagName !== "SCRIPT" &&
             el.tagName !== "STYLE") {
             textNodes.push(node);
@@ -113909,8 +113922,6 @@ function localizeDom(root, t) {
     const elements = root.querySelectorAll("*");
     for (let i = 0; i < elements.length; i++) {
         const el = elements[i];
-        if (isSkipped(el))
-            continue;
         for (const attr of ["data-tooltip", "title"]) {
             const value = el.getAttribute(attr);
             if (value != null && value !== "") {
