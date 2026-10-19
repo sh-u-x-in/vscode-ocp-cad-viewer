@@ -59,9 +59,24 @@ limitations under the License.
                 const { Viewer, Display, Timer } = await import(paths.renderer);
                 const { createPage } = await import(paths.core);
 
+                // ocp-viewer-core assembles the Display options from a
+                // hand-written field list (buildDisplayOptions), which has no
+                // `labels` entry - a labels override inside
+                // `overrides.display` would be silently dropped. Subclassing
+                // re-injects the dictionary at construction time, after that
+                // merge, where nothing can lose it.
+                const LabeledDisplay =
+                    settings.labels == null
+                        ? Display
+                        : class extends Display {
+                              constructor(element, options) {
+                                  super(element, { ...options, labels: settings.labels });
+                              }
+                          };
+
                 page = createPage({
                     Viewer,
-                    Display,
+                    Display: LabeledDisplay,
                     Timer,
                     send,
                     theme: settings.theme,
@@ -74,7 +89,6 @@ limitations under the License.
                             glass: settings.glass,
                             tools: settings.tools,
                             theme: settings.theme,
-                            labels: settings.labels,
                             zscaleTool: false
                         },
                         viewer: {
