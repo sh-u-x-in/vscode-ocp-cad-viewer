@@ -85667,23 +85667,23 @@ function circleFromPolyline(positions) {
  * the measurement tool). face: `geom: area ≈ A`; edge: `geom: len ≈ L, start/end`;
  * vertex: coords; solid: `solid: N faces, M edges, vol ≈ V`.
  */
-function hoverStatusText(info, fromSolid, provider) {
+function hoverStatusText(info, fromSolid, provider, t = (k) => k) {
     const f2 = (n) => n.toFixed(2);
     if (fromSolid && info.solidPath !== null) {
         // Solid face/edge totals from the tessellation type arrays (len(face_types) /
         // len(edge_types)). Per-face edge counts are NOT derivable (no face→edge map).
         const c = provider.nodeCounts(info.solidPath);
         if (c === null)
-            return "solid";
+            return t("solid");
         const g = provider.resolve(info.solidPath);
-        const vol = g !== null ? `, vol ≈ ${f2(meshVolume(g))}` : "";
-        return `solid: ${c.faces} faces, ${c.edges} edges${vol}`;
+        const vol = g !== null ? `, ${t("vol ≈")} ${f2(meshVolume(g))}` : "";
+        return `${t("solid")}: ${c.faces} ${t("faces")}, ${c.edges} ${t("edges")}${vol}`;
     }
     const geom = provider.resolve(info.path);
     const pt = (a, o) => `(${f2(a[o])}, ${f2(a[o + 1])}, ${f2(a[o + 2])})`;
     if (info.topo === "vertex") {
         const p = geom?.positions;
-        return p && p.length >= 3 ? `vertex: ${pt(p, 0)}` : "";
+        return p && p.length >= 3 ? `${t("vertex:")} ${pt(p, 0)}` : "";
     }
     const gt = geom != null ? displayGeomType(info.topo, geom.geomType) : "";
     if (info.topo === "edge") {
@@ -85701,19 +85701,19 @@ function hoverStatusText(info, fromSolid, provider) {
                     // full circle (start === end): center + radius say it all; an arc keeps
                     // its start/end too. Mesh-derived, so ≈.
                     return start === end
-                        ? `${gt}: r ≈ ${r}, c ≈ ${c}, len ≈ ${len}`
-                        : `${gt}: r ≈ ${r}, c ≈ ${c}, len ≈ ${len}, start=${start}, end=${end}`;
+                        ? `${t(gt)}: ${t("r ≈")} ${r}, ${t("c ≈")} ${c}, ${t("len ≈")} ${len}`
+                        : `${t(gt)}: ${t("r ≈")} ${r}, ${t("c ≈")} ${c}, ${t("len ≈")} ${len}, ${t("start=")}${start}, ${t("end=")}${end}`;
                 }
             }
             // closed edge (e.g. circle): start === end → show one point
             return start === end
-                ? `${gt}: len ≈ ${len}, at=${start}`
-                : `${gt}: len ≈ ${len}, start=${start}, end=${end}`;
+                ? `${t(gt)}: ${t("len ≈")} ${len}, ${t("at=")}${start}`
+                : `${t(gt)}: ${t("len ≈")} ${len}, ${t("start=")}${start}, ${t("end=")}${end}`;
         }
-        return gt;
+        return t(gt);
     }
     // face
-    return geom != null ? `${gt}: area ≈ ${f2(triangulatedArea(geom))}` : gt;
+    return geom != null ? `${t(gt)}: ${t("area ≈")} ${f2(triangulatedArea(geom))}` : t(gt);
 }
 /** Axis-aligned bounding box of a component's vertices. */
 function boundingBox(geom) {
@@ -98216,6 +98216,7 @@ class PickingController {
             // hovered component changes (correct after explode/animation without invalidation).
             const cacheable = fromSolid || hit.info.topo === "face";
             const provider = this.host.rendered.nestedGroup.meshGeometry;
+            const t = this.host.display.t.bind(this.host.display);
             let text;
             if (cacheable) {
                 const key = fromSolid && hit.info.solidPath !== null
@@ -98226,12 +98227,12 @@ class PickingController {
                     text = cached;
                 }
                 else {
-                    text = hoverStatusText(hit.info, fromSolid, provider);
+                    text = hoverStatusText(hit.info, fromSolid, provider, t);
                     this.hoverStatusCache.set(key, text);
                 }
             }
             else {
-                text = hoverStatusText(hit.info, fromSolid, provider);
+                text = hoverStatusText(hit.info, fromSolid, provider, t);
             }
             this.host.display.setStatusLine(text);
         }
