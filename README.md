@@ -42,9 +42,10 @@ show(cq.Workplane().box(1, 2, 3))
    - 标签通过 three-cad-viewer 的 labels 接缝注入,语言包位于 `resources/labels/zh-cn.json`;
    - 查看器初始化时由扩展读取并放入 `init` 消息的 `settings.labels`;
    - 由设置 `OcpCadViewer.view.language` 控制:
-     - `auto`:跟随 VS Code 显示语言(以 `zh` 开头即中文);
+     - `auto`(默认):跟随 VS Code 显示语言(以 `zh` 开头即中文);
      - `en`:英文;
-     - `zh-CN`:中文(默认)。
+     - `zh-CN`:中文。
+   - 设置变更即时生效(已打开的查看器会自动重载);读取或解析语言包失败时自动回退英文。
    - 切换后重新打开查看器生效;读取或解析语言包失败时自动回退英文。
 
 命令 ID、配置键、`contextValue`、消息类型等内部标识始终保持英文,不做翻译。

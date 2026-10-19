@@ -394,7 +394,7 @@
             "en",
             "zh-CN"
           ],
-          "default": "zh-CN",
+          "default": "auto",
           "description": "%config.view.language%",
           "order": 20
         },

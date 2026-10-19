@@ -66,7 +66,7 @@ function backendTerminalName(): string {
 function viewerLanguage(): "zh-CN" | "en" {
     const configured =
         vscode.workspace.getConfiguration("OcpCadViewer.view").get<string>("language") ??
-        "zh-CN";
+        "auto";
     if (configured === "zh-CN") {
         return "zh-CN";
     }
