@@ -96681,9 +96681,11 @@ function isBoundingBoxData(value) {
 /**
  * Format a key for display: lowercase and insert space before trailing digits.
  * e.g. "normal1" → "normal 1", "Point 1" → "point 1", "Distance" → "distance"
+ * Idempotent: an existing space before the digits is consumed, so already
+ * formatted keys ("point 1") keep a single space and stay lookup-stable.
  */
 function formatKey(key) {
-    return key.toLowerCase().replace(/(\D)(\d+)$/, "$1 $2");
+    return key.toLowerCase().replace(/(\D)\s*(\d+)$/, "$1 $2");
 }
 function createVectorRow(key, value, t) {
     const xyzColors = [
