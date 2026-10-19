@@ -152,6 +152,14 @@ export class OCPCADController {
                 );
             }
         }
+        output.debug(
+            `viewer init: setting=${
+                vscode.workspace.getConfiguration("OcpCadViewer.view").get("language") ??
+                "(unset)"
+            }, language=${viewerLanguage()}, labels=${
+                settings.labels ? Object.keys(settings.labels).length : 0
+            }`
+        );
         return await this.view?.postMessage({
             type: "init",
             paths: {
