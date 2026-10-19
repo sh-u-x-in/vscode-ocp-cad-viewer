@@ -50,10 +50,6 @@ limitations under the License.
 
             async function init(paths, values) {
                 settings = values;
-                console.log(
-                    "[ocp-viewer] init: labels =",
-                    settings.labels ? Object.keys(settings.labels).length : "none"
-                );
 
                 const style = document.createElement("link");
                 style.rel = "stylesheet";

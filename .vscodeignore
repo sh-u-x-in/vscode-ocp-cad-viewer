@@ -352,3 +352,6 @@ ocp-viewer-core-v*.tgz
 proper-lockfile-*.tgz
 .clean_ttf/
 .ruff_cache/
+
+LOCALIZATION_AUDIT.zh-CN.md
+LOCALIZATION_AUDIT.en.md
