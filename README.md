@@ -1,8 +1,8 @@
 # OCP CAD Viewer 中文版(fork)
 
-这是由 [sh-u-x-in](https://github.com/sh-u-x-in) 维护的 **vscode-ocp-cad-viewer 中文版 fork**,版本对齐上游 **4.2.0**。本 fork **不发布到 VS Code 应用商店**,请从本仓库的 [Releases](https://github.com/sh-u-x-in/vscode-ocp-cad-viewer/releases) 下载 `.vsix` 安装。英文原版说明见 [README.en.md](README.en.md)。
+这是由 [sh-u-x-in](https://github.com/sh-u-x-in) 维护的 **vscode-ocp-cad-viewer 中文版 fork**,基于上游 **4.2.0**(已合入 main 分支的链接修复 [PR #247](https://github.com/bernhard-42/vscode-ocp-cad-viewer/pull/247)),当前为**试用版**。本 fork **不发布到 VS Code 应用商店**,请从本仓库的 [Releases](https://github.com/sh-u-x-in/vscode-ocp-cad-viewer/releases) 下载 `.vsix` 安装。英文原版说明见 [README.en.md](README.en.md)。
 
-> 本仓库专注于界面汉化与 3D 视图标签接线,功能与上游 4.2.0 保持一致。
+> 本仓库专注于界面汉化与 3D 视图标签接线,功能与上游 4.2.0 保持一致。当前为**个人试用线**:跟随上游更新;上游 5.2.0 的原生本地化架构(`locale` 参数)发布后,将迁移至官方接缝。
 
 ![概览](screenshots/overview.png)
 
